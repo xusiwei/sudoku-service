@@ -25,10 +25,14 @@ func main() {
 	// ToString
 	fmt.Printf("ToString:\t:%s\n", p.ToString())
 
-	// Get
+	// Get/Set
 	for i := 0; i < sudoku.Rows; i++ {
 		for j := 0; j < sudoku.Cols; j++ {
 			assert(p.Get(i, j) == j,
+				fmt.Sprintf("assertion failed on (%d, %d)", i, j))
+
+			p.Set(i, j, 9)
+			assert(p.Get(i, j) == 9,
 				fmt.Sprintf("assertion failed on (%d, %d)", i, j))
 		}
 	}

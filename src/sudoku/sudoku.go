@@ -30,6 +30,9 @@ func (p *Puzzle) Get(x, y int) int {
 	return p.data[x*Cols+y]
 }
 
+func (p *Puzzle) Set(x, y int, v int) {
+	p.data[x*Cols+y] = v
+}
 
 // private
 func puzString2Array(str string) []int {
