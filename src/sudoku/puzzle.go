@@ -14,7 +14,11 @@ type Puzzle struct {
 
 // constructor
 func NewPuzzle(str string) *Puzzle {
-	return &Puzzle{puzString2Array(str)}
+	arr := puzString2Array(str)
+	if arr == nil {
+		return nil
+	}
+	return &Puzzle{arr}
 }
 
 func MakePuzzle(str string) Puzzle {

@@ -25,7 +25,15 @@ func NewChecker() *SudokuChecker {
 }
 
 // methods
+func (checker *SudokuChecker) CheckPuzzle(puz string) bool {
+	return checker.Check(NewPuzzle(puz))
+}
+
 func (checker *SudokuChecker) Check(p *Puzzle) bool {
+	if p == nil {
+		return false
+	}
+
 	// check cell values
 	for i := 0; i < Rows; i++ {
 		for j := 0; j < Cols; j++ {
