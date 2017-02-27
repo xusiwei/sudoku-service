@@ -1,85 +1,94 @@
 package sudoku
 
+import "log"
+
 const (
 	Boxs      = 9
-	BoxRows   = 3
-	BoxCols   = 3
-	BoxCells  = BoxRows * BoxCols
-	MinValue  = 0
-	MaxValue  = 9
-	NumValues = MaxValue - MinValue + 1
+	BoxSize   = 3
+	BoxCells  = BoxSize * BoxSize
+	NumValues = 10 // 1~9 filled, 0 means blank
 )
 
-/*
-type Checker interface {
-	Check(p *Puzzle) bool
-}
-*/
-
-type SudokuChecker struct {
+type Checker struct {
 }
 
 // constructor
-func NewChecker() *SudokuChecker {
-	return &SudokuChecker{}
+func NewChecker() *Checker {
+	return &Checker{}
 }
 
 // methods
-func (checker *SudokuChecker) CheckPuzzle(puz string) bool {
+func (checker *Checker) CheckPuzzle(puz string) bool {
 	return checker.Check(NewPuzzle(puz))
 }
 
-func (checker *SudokuChecker) Check(p *Puzzle) bool {
+func (checker *Checker) Blanks(p *Puzzle) int {
+	if p == nil {
+		return -1
+	}
+
+	count := 0
+	for i := 0; i < Size; i++ {
+		for j := 0; j < Size; j++ {
+			if p.Get(i, j) == 0 {
+				count += 1
+			}
+		}
+	}
+	return count
+}
+
+func (checker *Checker) Check(p *Puzzle) bool {
 	if p == nil {
 		return false
 	}
 
 	// check cell values
-	for i := 0; i < Rows; i++ {
-		for j := 0; j < Cols; j++ {
+	for i := 0; i < Size; i++ {
+		for j := 0; j < Size; j++ {
 			v := p.Get(i, j)
 			if v < 0 || v > 9 {
+				log.Printf("invalid value %d at(%d, %d)\n", v, i, j)
 				return false
 			}
 		}
 	}
 
 	// check each row
-	for i := 0; i < Rows; i++ {
+	for i := 0; i < Size; i++ {
 		count := [NumValues]int{}
-		for j := 0; j < Cols; j++ {
+		for j := 0; j < Size; j++ {
 			v := p.Get(i, j)
-			if count[v] > 1 {
+			count[v] += 1
+			if v > 0 && count[v] > 1 {
 				return false
 			}
-			count[v] += 1
 		}
 	}
 
 	// check each cols
-	for j := 0; j < Cols; j++ {
+	for j := 0; j < Size; j++ {
 		count := [NumValues]int{}
-		for i := 0; i < Rows; i++ {
+		for i := 0; i < Size; i++ {
 			v := p.Get(i, j)
-			if count[v] > 1 {
+			count[v] += 1
+			if v > 0 && count[v] > 1 {
 				return false
 			}
-			count[v] += 1
 		}
 	}
 
 	// check each box
 	for b := 0; b < Boxs; b++ {
-		br := b / (Cols / BoxCols) * BoxCols
-		bc := b % (Cols / BoxCols) * BoxCols
+		br := b / (Size / BoxSize) * BoxSize
+		bc := b % (Size / BoxSize) * BoxSize
 		count := [NumValues]int{}
 		for i := 0; i < BoxCells; i++ {
-			v := p.Get(br+i/BoxCols, bc+i%BoxCols)
-			if count[v] > 1 {
+			v := p.Get(br+i/BoxSize, bc+i%BoxSize)
+			count[v] += 1
+			if v > 0 && count[v] > 1 {
 				return false
 			}
-			count[v] += 1
-
 		}
 	}
 	return true

@@ -3,9 +3,8 @@ package sudoku
 import "strconv"
 
 const (
-	Rows  = 9
-	Cols  = 9
-	Cells = Rows * Cols
+	Size  = 9
+	Cells = Size * Size
 )
 
 type Puzzle struct {
@@ -21,6 +20,13 @@ func NewPuzzle(str string) *Puzzle {
 	return &Puzzle{arr}
 }
 
+func CopyPuzzle(old *Puzzle) *Puzzle {
+	dup := &Puzzle{}
+	dup.data = make([]int, len(old.data))
+	copy(dup.data, old.data)
+	return dup
+}
+
 func MakePuzzle(str string) Puzzle {
 	return Puzzle{puzString2Array(str)}
 }
@@ -31,11 +37,11 @@ func (p *Puzzle) ToString() string {
 }
 
 func (p *Puzzle) Get(x, y int) int {
-	return p.data[x*Cols+y]
+	return p.data[x*Size+y]
 }
 
 func (p *Puzzle) Set(x, y int, v int) {
-	p.data[x*Cols+y] = v
+	p.data[x*Size+y] = v
 }
 
 // private
