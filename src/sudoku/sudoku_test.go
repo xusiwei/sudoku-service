@@ -158,10 +158,17 @@ func TestSolveExtreme(t *testing.T) {
 	solve(puz, t)
 }
 
+func TestSolveMultiple(t *testing.T) {
+	solve("068090030030600020571420000700000408940000371086070259804305712620001980000000000", t)
+	solve("068090030030600020571420000700000408940000371086070259804305712620001900000000000", t)
+	solve("068090030030600020571420000700000408940000371086070259804305710000000000000000000", t)
+}
+
 func printPuzzle(puz string) {
 	c := NewChecker()
 	p := NewPuzzle(puz)
-	log.Printf("puzzle: %s\n", puz)
+	log.Println("===============================")
+	log.Printf("Puzzle: %s\n", puz)
 	log.Printf("pretty: \n%s", p.prettyString())
 	log.Println("Check:", c.Check(p))
 	log.Println("CheckPuzzle:", c.CheckPuzzle(puz))
