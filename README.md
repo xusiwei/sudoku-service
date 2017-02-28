@@ -29,29 +29,37 @@ Sudoku web service
 	* Parameters:
 		* `puz=`*serialized_sudoku_puzzle*
 		* `level=`puzzle_level
-	* Returns: `{puz: requested_puzzle, date:release_date, level:puzzle_level, status:[created|existed|invalid]}`
+		* `date=`YYYYmmDD, Optional
+	* Returns: `{result: puzzle, status:[created|existed|invalid]}`, puzzle is:
+		* `{puz: serialized_sudoku_puzzle, date: release_date, level: n}`
+		* or `null`, if `status` is `invalid`
 * query some sudoku puzzle
 	* Method: `GET`
 	* Parameters:
 		* `date=`YYYYmmDD, request a sudoku puzzle released on a specific `date`
-		* `level=`*n* level of a puzzle, default value `0`
-		* `rand=`[0|1], request a random sudoku puzzle
+		* `level=`*n*, level of a puzzle, default value `0`
+		* `rand=`[0|1], Optional, request a random sudoku puzzle
 			* requested with `rand=1`, severr will ignore `date` parameter
 	* Returns:
-		* `{puzzles: puzzle_array}`, element of `puzzle_array`:
-			* `{puz: serialized_sudoku_puzzle, date: release_date, level: n}`
+		* `{result: puzzle_array, status:[found|notfound]}`, element of `puzzle_array`:
+		* `{puz: serialized_sudoku_puzzle, date: release_date, level: n}`
+		* or `null`, if `status` is `notfound`
 * update an exist sudoku puzzle
 	* Method: `PATCH`
 	* Parameters:
-		* `old=`*serialized_sudoku_puzzle*,
+		* `puz=`*serialized_sudoku_puzzle*,
 		* `new=`*serialized_sudoku_puzzle*,
 	* Returns:
-		* `{puz: serialized_sudoku_puzzle, date: release_date, level: n, status:[updated|existed|invalid]}`
+		* `{result: puzzle, status:[updated|notfound|existed|invalid]}`, puzzle is:
+		* `{puz: serialized_sudoku_puzzle, date: release_date, level: n}`
+		* or `null`, if `status` is `invalid`
 * delete an exist sudoku puzzle
 	* Method: `DELETE`
 	* Parameters:
 		* `puz=`*serialized_sudoku_puzzle*
-	* Returns: `{puz: serialized_sudoku_puzzle, date: release_date, level: n, status:[deleted|notfound]}`
+	* Returns: `{result: puzzle, status:[deleted|notfound]}`, puzzle is:
+		* `{puz: serialized_sudoku_puzzle, date: release_date, level: n}`
+		* or `null`, if `status` is `notfound`
 
 ## sudoku puzzle serailization
 
@@ -60,20 +68,20 @@ Sudoku web service
 
 ### example
 
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| 1 | 6 | 3 | 9 | 2 | 7 | 8 | 4 | 5 |
 |---|---|---|---|---|---|---|---|---|
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
-| 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+| 8 | 9 | 4 | 3 | 5 | 6 | 1 | 7 | 2 |
+| 7 | 2 | 5 | 4 | 1 | 8 | 9 | 6 | 3 |
+| 5 | 8 | 1 | 7 | 6 | 2 | 4 | 3 | 9 |
+| 2 | 3 | 6 | 8 | 9 | 4 | 5 | 1 | 7 |
+| 4 | 7 | 9 | 5 | 3 | 1 | 6 | 2 | 8 |
+| 6 | 1 | 7 | 2 | 8 | 5 | 3 | 9 | 4 |
+| 9 | 4 | 8 | 1 | 7 | 3 | 2 | 5 | 6 |
+| 3 | 5 | 2 | 6 | 4 | 9 | 7 | 8 | 1 |
 
-It's an invalid sudoku puzzle, serialed as:
+It's a full filled sudoku, will serialized as:
 
-`012345678012345678012345678012345678012345678012345678012345678012345678012345678`
+`163927845894356172725418963581762439236894517479531628617285394948173256352649781`
 
 
 **read more about sudoku**: https://en.wikipedia.org/wiki/Sudoku
