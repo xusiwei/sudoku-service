@@ -6,6 +6,7 @@ import "service"
 func main() {
 
 	mux := http.NewServeMux()
+	mux.Handle("/puzzles", service.NewPuzzleService())
 	mux.Handle("/checker", service.NewCheckerService())
 	mux.Handle("/solver", service.NewSolverService())
 
