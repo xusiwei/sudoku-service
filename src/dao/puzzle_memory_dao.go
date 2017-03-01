@@ -9,7 +9,7 @@ type PuzzleMemoryDao struct {
 	checker   *sudoku.Checker
 	records   []PuzzleBean
 	puzzIndex map[string]int
-	dateIndex map[string][]int
+	dateIndex map[string]map[int]bool
 }
 
 // constructor
@@ -17,7 +17,7 @@ func NewPuzzleMemoryDao() *PuzzleMemoryDao {
 	return &PuzzleMemoryDao{checker: sudoku.NewChecker(),
 		records:   make([]PuzzleBean, 0),
 		puzzIndex: map[string]int{},
-		dateIndex: map[string][]int{}}
+		dateIndex: map[string]map[int]bool{}}
 }
 
 func dateLevelIndex(date string, level int) string {
@@ -50,9 +50,9 @@ func (dao *PuzzleMemoryDao) Create(puz string, level int, date string) (*PuzzleB
 	// add (date, level) index
 	dlidx := dateLevelIndex(date, level)
 	if _, existed := dao.dateIndex[dlidx]; !existed {
-		dao.dateIndex[dlidx] = make([]int, 0)
+		dao.dateIndex[dlidx] = map[int]bool{}
 	}
-	dao.dateIndex[dlidx] = append(dao.dateIndex[dlidx], index)
+	dao.dateIndex[dlidx][index] = true
 
 	return prec, StatusCreated
 }
@@ -65,7 +65,7 @@ func (dao *PuzzleMemoryDao) Query(date string, level int) ([]PuzzleBean, PuzzleD
 	dlidx := dateLevelIndex(date, level)
 
 	results := make([]PuzzleBean, 0)
-	for _, index := range dao.dateIndex[dlidx] {
+	for index, _ := range dao.dateIndex[dlidx] {
 		results = append(results, dao.records[index])
 	}
 
@@ -119,29 +119,24 @@ func (dao *PuzzleMemoryDao) Delete(puz string) (*PuzzleBean, PuzzleDaoStatus) {
 	}
 
 	rec := dao.records[index]
+	dlidx := dateLevelIndex(rec.Date, rec.Level)
+	lastIdx := len(dao.records) - 1
+	lastRec := dao.records[lastIdx]
+	lastDlidx := dateLevelIndex(lastRec.Date, lastRec.Level)
 
 	// remove index firstly
 	delete(dao.puzzIndex, puz)
-	delete(dao.dateIndex, dateLevelIndex(rec.Date, rec.Level))
+	delete(dao.dateIndex[dlidx], index)
 
-	if index < len(dao.records)-1 {
-		lastIdx := len(dao.records) - 1
-		lastRec := dao.records[lastIdx]
-
-		// copy the last record to current slot
+	if index != lastIdx {
+		// move the last record to this slot
 		dao.records[index] = lastRec
 
-		// update it's index
+		// update the index of moved record
 		dao.puzzIndex[lastRec.Puzzle] = index
-		lastDlidx := dateLevelIndex(lastRec.Date, lastRec.Level)
-		for i, idx := range dao.dateIndex[lastDlidx] {
-			if idx == lastIdx {
-				dao.dateIndex[lastDlidx][i] = index
-				break
-			}
-		}
+		dao.dateIndex[lastDlidx][index] = true
 	}
-	// resize recore slice
-	dao.records = dao.records[:len(dao.records)-1]
+	// resize record slice
+	dao.records = dao.records[:lastIdx]
 	return &rec, StatusDeleted
 }
