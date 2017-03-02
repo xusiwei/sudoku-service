@@ -1,15 +1,13 @@
 all: main test
 
-main: setup
+main:
 	go build -v main
 
 test: sudoku_test dao_test
 
-dao_test: setup
+dao_test:
 	go test -v dao
 
-sudoku_test: setup
+sudoku_test:
 	go test -v sudoku
 
-setup:
-	export GOPATH=`pwd`

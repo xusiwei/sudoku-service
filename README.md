@@ -1,6 +1,15 @@
 # sudoku-service
 Sudoku web service
 
+## quick start
+
+1. download source code here
+2. build and run test
+
+```sh
+GOPATH=`pwd` make
+```
+
 ## resources
 
 ### sovler
