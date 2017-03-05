@@ -25,6 +25,7 @@ func main() {
 	fmt.Println("listen on address", address)
 
 	mux := http.NewServeMux()
+	mux.Handle("/", service.NewHomeService())
 	mux.Handle("/puzzles", service.NewPuzzleService())
 	mux.Handle("/checker", service.NewCheckerService())
 	mux.Handle("/solver", service.NewSolverService())
