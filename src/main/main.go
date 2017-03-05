@@ -9,6 +9,7 @@ import "net/http"
 import "service"
 
 var port = flag.Int("port", 9988, "The port you want to bind")
+var host = flag.String("host", "localhost", "The host you want to bind")
 var logfile = flag.String("log", "run.log", "Log file write back")
 
 var ErrHelp = errors.New("flag: help requested")
@@ -17,7 +18,7 @@ func main() {
 
 	flag.Parse()
 
-	address := fmt.Sprintf("127.0.0.1:%d", *port)
+	address := fmt.Sprintf("%s:%d", *host, *port)
 	if fp, err := os.Create(*logfile); err == nil {
 		fmt.Println("loging to file", *logfile)
 		log.SetOutput(fp)
