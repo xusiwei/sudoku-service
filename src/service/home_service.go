@@ -1,16 +1,18 @@
 package service
 
 import "fmt"
+import "log"
 import "net/http"
 import "sudoku"
 
-//import "html/template"
+import "html/template"
 
 type HomeService struct {
+	url string
 }
 
-func NewHomeService() *HomeService {
-	return &HomeService{}
+func NewHomeService(url string) *HomeService {
+	return &HomeService{url: url}
 }
 
 var tmpl = `<html>
@@ -27,7 +29,7 @@ var tmpl = `<html>
 <script src="http://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
 
 <script>
-	var base_url = '%s';
+	var base_url = '{{.Url}}';
 
 	var set_sudoku = function(puz, init) {
 		if (!puz || puz.length != 81) {
@@ -89,7 +91,7 @@ var tmpl = `<html>
 <body>
 	<div id="main-area" align="center">
 		<div id="puzzle" align="center">
-		%s
+		{{.Table}}
 		</div>
 		<input type="button" value="Check" onclick="check_puzzle()"> <br/>
 		<div id="result"><div> <br/>
@@ -113,7 +115,21 @@ func (hs *HomeService) ServeHTTP(writer http.ResponseWriter, request *http.Reque
 	}
 	table += "</table>\n"
 
-	fmt.Fprintf(writer, tmpl, "http://"+request.Host, table)
+	check := func(err error) {
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	t, e := template.New("page").Parse(tmpl)
+	check(e)
+
+	e = t.Execute(writer, map[string]interface{}{
+		"Url":   template.JSStr(hs.url),
+		"Table": template.HTML(table),
+	})
+	check(e)
+
 	writer.Header().Add("Access-Control-Allow-Origin", "*")
 	writer.WriteHeader(http.StatusOK)
 }
